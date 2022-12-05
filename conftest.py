@@ -10,7 +10,7 @@ def pytest_addoption(parser):
     parser.addoption("--browser", default="chrome", help="browser tu run tests")
     parser.addoption("--drivers", default=os.path.expanduser("~/drivers"), help="browser drivers path")
     parser.addoption("--headless", action="store_true", help="browser tu run tests")
-    parser.addoption("--url", action="store", default="https://demo.opencart.com")
+    parser.addoption("--url", action="store", default="http://172.16.16.20:8081/")
 
 
 @pytest.fixture
