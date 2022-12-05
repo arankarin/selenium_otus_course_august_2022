@@ -1,43 +1,39 @@
-import pytest
 import os
+
+import pytest
 from selenium import webdriver
+from selenium.webdriver.chrome.service import Service as ChromiumService
+from selenium.webdriver.firefox.service import Service as FFService
+
 
 def pytest_addoption(parser):
-    parser.addoption(
-        "--browser", default="chrome", help="browser tu run tests"
-    )
-    parser.addoption(
-        "--drivers", default=os.path.expanduser("~/drivers"), help="browser drivers path"
-    )
-    parser.addoption(
-        "--headless", action="store_true", help="browser tu run tests"
-    )
+    parser.addoption("--browser", default="chrome", help="browser tu run tests")
+    parser.addoption("--drivers", default=os.path.expanduser("~/drivers"), help="browser drivers path")
+    parser.addoption("--headless", action="store_true", help="browser tu run tests")
+    parser.addoption("--url", action="store", default="https://demo.opencart.com")
 
 
 @pytest.fixture
-def driver(request):
-    browser_name = request.config.getoption("--browser")
-    headless = request.config.getoption("--headless")
+def browser(request):
+    browser = request.config.getoption("--browser")
     drivers_path = request.config.getoption("--drivers")
+    url = request.config.getoption("--url")
 
-    if browser_name == "chrome":
-        options = webdriver.ChromeOptions()
+    if browser == "chrome":
+        service = ChromiumService(executable_path=drivers_path + "/chromedriver")
+        driver = webdriver.Chrome(service=service)
 
-        if headless:
-            options.headless = True
-        _driver = webdriver.Chrome(
-            executable_path=os.path.expanduser(f"{drivers_path}/chromedriver"),
-            options=options
-        )
-    elif browser_name == "firefox":
-        _driver = webdriver.Firefox(executable_path=os.path.expanduser(f"{drivers_path}/geckodriver"))
-    elif browser_name == "opera":
-        _driver = webdriver.Opera(executable_path=os.path.expanduser(f"{drivers_path}/operadriver"))
-    elif browser_name == "yandex":
-        _driver = webdriver.Chrome(executable_path=os.path.expanduser(f"{drivers_path}/yandexdriver"))
+    elif browser == "yandex":
+        driver = webdriver.Chrome(executable_path=os.path.expanduser(f"{drivers_path}/yandexdriver"))
+    elif browser == "firefox":
+        service = FFService(executable_path=drivers_path + "/geckodriver")
+        driver = webdriver.Firefox(service=service)
     else:
-        raise ValueError(f"Браузер {browser_name} не поддерживается")
+        raise ValueError(f"Браузер {browser} не поддерживается")
 
-    yield _driver
+    driver.maximize_window()
+    driver.get(url)
+    driver.url = url
+    yield driver
 
-    _driver.close()
+    driver.close()
