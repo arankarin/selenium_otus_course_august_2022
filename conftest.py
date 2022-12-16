@@ -10,14 +10,14 @@ def pytest_addoption(parser):
     parser.addoption("--browser", default="chrome", help="browser tu run tests")
     parser.addoption("--drivers", default=os.path.expanduser("~/drivers"), help="browser drivers path")
     parser.addoption("--headless", action="store_true", help="browser tu run tests")
-    parser.addoption("--url", action="store", default="http://172.16.16.20:8081/")
+    parser.addoption("--main_url", action="store", default="http://172.16.16.20:8081/")
 
 
 @pytest.fixture
 def browser(request):
     browser = request.config.getoption("--browser")
     drivers_path = request.config.getoption("--drivers")
-    url = request.config.getoption("--url")
+    main_url = request.config.getoption("--main_url")
 
     if browser == "chrome":
         service = ChromiumService(executable_path=drivers_path + "/chromedriver")
@@ -32,8 +32,8 @@ def browser(request):
         raise ValueError(f"Браузер {browser} не поддерживается")
 
     driver.maximize_window()
-    driver.get(url)
-    driver.url = url
+    driver.get(main_url)
+    driver.main_url = main_url
     yield driver
 
     driver.close()
