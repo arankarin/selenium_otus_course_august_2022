@@ -1,3 +1,5 @@
+import allure
+
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
@@ -15,10 +17,17 @@ class MacBookPages(MainPage):
     TEXT_COMPARISON = "1 item(s) - $602.00"
     INPUT_QTY = (By.CSS_SELECTOR, 'div[class="mb-3"]>input[class="form-control"]')
 
+    @allure.step
     def text_comparing_element(self, element, text):
         wait = WebDriverWait(self.driver, 1)
-        wait.until(EC.text_to_be_present_in_element(element, text))
+        try:
+            self.logger.info(f"Передали текст {text}")
+            wait.until(EC.text_to_be_present_in_element(element, text))
+            return True
+        except Exception as e:
+            self.logger.error(f"Текст не найден")
 
+    @allure.step
     def input_and_validation(self, element, value_el):
         element.clear()
         element.send_keys(value_el)

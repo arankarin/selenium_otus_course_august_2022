@@ -1,3 +1,5 @@
+import allure
+
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
@@ -29,15 +31,20 @@ class RegisterAccountPages(MainPage):
     ELEMENT_ERROR_PASSWORD_TEXT = "Password must be between 4 and 20 characters!"
     REG_PAGE_TITLE = 'Your Account Has Been Created!'
 
+    @allure.step
     def element_select_clickable(self, selector):
+        self.logger.info(f"Передаем селектор: {selector}")
         wait = WebDriverWait(self.driver, 1)
         element = wait.until(EC.element_to_be_clickable(selector))
         return element
 
+    @allure.step
     def attributes_compare(self, elements, atribut_name_list, atribut_name):
         for name_el in elements:
+            self.logger.info(f"Получаем atribut_name: {name_el.get_attribute(atribut_name)}")
             assert atribut_name_list.count(name_el.get_attribute(atribut_name))
 
+    @allure.step
     def set_value_fields(self):
         first_name = self.generate_random_name()
         last_name = self.generate_random_name()
@@ -47,16 +54,15 @@ class RegisterAccountPages(MainPage):
         password = em1 + em2
         return [first_name, last_name, email, password]
 
+    @allure.step
     def register_account(self, page):
         all_value = self.set_value_fields()
-        print(all_value)
+        self.logger.info(f"Генерируем данные для регистрации: {all_value}")
         page.fill_input(page.ELEMENT_FIRSTNAME, all_value[0])
         page.fill_input(page.ELEMENT_LASTNAME, all_value[1])
         page.fill_input(page.ELEMENT_EMAIL, all_value[2])
         page.fill_input(page.ELEMENT_PASSWORD, all_value[3])
         yes = self.element_select_clickable(self.SUBSCRIBE_YES)
         yes.click()
-        print(f".is_selected() = {yes.is_selected()}")
-        print(f"element dir = {yes.__dir__()}")
         checkbox = page.element_select_clickable(self.CHECKBOX)
         checkbox.click()

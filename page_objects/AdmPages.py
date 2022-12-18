@@ -1,5 +1,5 @@
 import time
-import random
+import allure
 
 from selenium.common import NoAlertPresentException
 from selenium.webdriver import ActionChains
@@ -37,7 +37,11 @@ class AdmPages(MainPage):
     CHECKBOX = (By.CSS_SELECTOR, 'input[name="selected[]"]')
     BUTTON_DELETE = (By.CSS_SELECTOR, 'button[title="Delete"]')
 
+    @allure.step
     def login_admin(self, page, username='', password=''):
+        self.logger.info(f"Передаем page: {page}")
+        self.logger.info(f"Передаем username: {username}")
+        self.logger.info(f"Передаем password: {password}")
         wait = WebDriverWait(self.driver, 1)
         el_username = page.sech_element(page.USENAME_SELECTOR)
         el_username.clear()
@@ -48,21 +52,27 @@ class AdmPages(MainPage):
         page.click_button(page.BUTTON_LOGIN)
         if username == 'user' and password == 'bitnami':
             page.title_site("Dashboard")
+            self.logger.info(f"Вход под администратором осуществлен")
             return page
         else:
+            self.logger.info(f"Вход НЕ осуществлен, остались на странице входа")
             page.title_site("Administration")
 
+    @allure.step
     def menu_products(self):
         wait = WebDriverWait(self.driver, 1)
         all_nemu_nav_tabs = wait.until(
             EC.presence_of_all_elements_located(self.MENU_PRODUCT_CSS))
         menu_nav_tabs = all_nemu_nav_tabs[1]
+        self.logger.info(f"Выбрано меню по селектору: {self.MENU_PRODUCT_CSS}")
         time.sleep(2)  # Обязательная пауза
         menu_nav_tabs.click()
+        self.logger.debug("Нажата кнопка меню")
         return menu_nav_tabs
 
+    @allure.step
     def add_product(self, page, new_product):
-        print(f"new_product = {new_product}")
+        self.logger.info(f"new_product: {new_product}")
         page.login_admin(page, page.USENAME, page.PASSWORD)
         page.sech_element(page.MENU_CATALOG).click()
         page.menu_products()
@@ -77,13 +87,16 @@ class AdmPages(MainPage):
         page.fill_input(self.SEO_DEFAULT, new_product['default'])
         page.click_button(self.BUTTON_SAVE_PRODUCT)
 
+    @allure.step
     def fill_input_1(self, selector, intut_text):
         wait = WebDriverWait(self.driver, 1)
         input_element = wait.until(EC.presence_of_element_located(selector))
         input_element.clear()
         input_element.send_keys(intut_text)
 
-    def element_checkboxe_click(self):
+    @allure.step
+    def element_checkboxe_click(self, selector):
+        self.logger.info(f"Передаем селектор для checkboxe: {selector}")
         wait = WebDriverWait(self.driver, 1)
-        element = wait.until(EC.visibility_of_element_located(self.CHECKBOX))
+        element = wait.until(EC.visibility_of_element_located(selector))
         ActionChains(self.driver).move_to_element(element).pause(0.1).click().perform()

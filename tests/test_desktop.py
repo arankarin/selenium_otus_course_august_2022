@@ -1,14 +1,15 @@
 import time
+import allure
 from page_objects.DesktopsPage import DesktopsPage
 
-
+@allure.feature("Desktops Page")
 def test_title(browser):
     """Проверка заголовка страницы"""
     page = DesktopsPage(browser)
     page.open()
     page.title_site(page.TITLE)
 
-
+@allure.feature("Desktops Page")
 def test_compare(browser):
     """Нажатие на Сравнить твар"""
     page = DesktopsPage(browser)
@@ -16,7 +17,7 @@ def test_compare(browser):
     page.click_button(page.BUTTON_COMPARE)
     page.title_site(page.TITLE_COMPARE)
 
-
+@allure.feature("Desktops Page")
 def test_sort_by(browser):
     """проверка элемонтов сортировки"""
     page = DesktopsPage(browser)
@@ -24,7 +25,7 @@ def test_sort_by(browser):
     elements = page.sech_elements(page.SORT_BY_SELECTOR)
     page.element_comparison(elements, page.SORT_BY)
 
-
+@allure.feature("Desktops Page")
 def test_show(browser):
     """проверка списка Show"""
     page = DesktopsPage(browser)
@@ -32,7 +33,7 @@ def test_show(browser):
     elements = page.sech_elements(page.SHOW_SELECTOR)
     page.element_comparison(elements, page.SHOW)
 
-
+@allure.feature("Desktops Page")
 def test_element_components(browser):
     """Проверка появления лементов меню при нажатии на components"""
     page = DesktopsPage(browser)
